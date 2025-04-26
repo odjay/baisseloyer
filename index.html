@@ -7,10 +7,10 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background: #f9f9f9;
         }
         h1 {
             color: #333;
@@ -24,7 +24,7 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input {
+        input, select {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
@@ -48,11 +48,17 @@
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            background-color: #f9f9f9;
+            background-color: #fff;
             display: none;
         }
         .positive { color: green; }
         .negative { color: red; }
+        .info-box {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -64,30 +70,36 @@
             text-align: left;
         }
         th { background-color: #f2f2f2; }
-        .info-box {
-            background-color: #e7f3fe;
-            border-left: 6px solid #2196F3;
-            padding: 10px;
-            margin-bottom: 15px;
-        }
     </style>
 </head>
 <body>
-    <h1>Calculateur de baisse de loyer basé sur le taux hypothécaire</h1>
+    <h1>Calculateur de baisse de loyer<br>taux hypothécaire de référence</h1>
     
     <div class="info-box">
-        <p>Ce calculateur vous permet d'estimer la baisse de loyer potentielle basée sur la diminution du taux hypothécaire de référence, en tenant compte des compensations possibles (inflation et charges).</p>
+        <p>
+            Calculez la baisse de loyer possible selon la baisse du taux hypothécaire de référence, en tenant compte des compensations (inflation, charges).<br>
+            <strong>Source :</strong> Droit au logement, n°212, novembre 2013.
+        </p>
     </div>
 
     <form id="loanForm">
         <div class="form-group">
-            <label for="oldRate">Taux hypothécaire initial (dans votre bail) :</label>
-            <input type="number" id="oldRate" step="0.25" min="0" max="10" value="2.5" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="newRate">Taux hypothécaire actuel :</label>
-            <input type="number" id="newRate" step="0.25" min="0" max="10" value="1.5" required>
+            <label for="oldRate">Taux hypothécaire initial (année de début du bail) :</label>
+            <select id="oldRate" required>
+                <option value="6.00">2008 : 6,00%</option>
+                <option value="5.75">2009 : 5,75%</option>
+                <option value="5.50">2010 : 5,50%</option>
+                <option value="5.25">2011 : 5,25%</option>
+                <option value="5.00">2012 : 5,00%</option>
+                <option value="4.50">2013 : 4,50%</option>
+                <option value="4.25">2014 : 4,25%</option>
+                <option value="4.00">2015 : 4,00%</option>
+                <option value="3.50">2016 : 3,50%</option>
+                <option value="3.00">2017 : 3,00%</option>
+                <option value="2.75">2018 : 2,75%</option>
+                <option value="2.50">2019 : 2,50%</option>
+                <option value="2.25">2020 : 2,25%</option>
+            </select>
         </div>
         
         <div class="form-group">
@@ -110,51 +122,32 @@
     
     <div id="result">
         <h2>Résultat du calcul</h2>
-        
-        <div>
-            <p>Pour un loyer actuel de <span id="rentValue"></span> CHF/mois :</p>
-        </div>
-        
-        <div>
-            <p>Baisse maximale possible (taux seul) : <span id="maxReduction" class="positive"></span> CHF/mois</p>
-        </div>
-        
-        <div>
-            <p>Compensation maximale (inflation + charges) : <span id="maxCompensation" class="negative"></span> CHF/mois</p>
-        </div>
-        
-        <div>
-            <p>Baisse nette : <span id="netReduction"></span> CHF/mois</p>
-        </div>
-        
-        <div>
-            <p>Nouveau loyer estimé : <span id="newRent"></span> CHF/mois</p>
-        </div>
-        
+        <p>Loyer actuel : <span id="rentValue"></span> CHF/mois</p>
+        <p>Baisse maximale possible (taux seul) : <span id="maxReduction" class="positive"></span> CHF/mois (<span id="maxReductionPercent"></span>%)</p>
+        <p>Compensation maximale (inflation + charges) : <span id="maxCompensation" class="negative"></span> CHF/mois (<span id="maxCompensationPercent"></span>%)</p>
+        <p>Baisse nette : <span id="netReduction"></span> CHF/mois (<span id="netReductionPercent"></span>%)</p>
+        <p>Nouveau loyer estimé : <span id="newRent"></span> CHF/mois</p>
         <div id="warning" style="display: none;" class="info-box">
             <p><strong>Attention :</strong> Le calcul indique que le bailleur pourrait justifier une hausse de loyer plutôt qu'une baisse.</p>
         </div>
     </div>
     
     <div style="margin-top: 30px;">
-        <h2>Tableau de référence - Baisse de loyer selon le taux</h2>
+        <h2>Tableau de référence – Baisse de loyer selon le taux</h2>
         <table>
             <tr>
                 <th>Taux de référence</th>
-                <th>Baisse du loyer possible</th>
+                <th>Baisse de loyer possible</th>
             </tr>
             <tr><td>6,00%</td><td>31,51%</td></tr>
             <tr><td>5,75%</td><td>30,31%</td></tr>
             <tr><td>5,50%</td><td>29,08%</td></tr>
             <tr><td>5,25%</td><td>27,80%</td></tr>
             <tr><td>5,00%</td><td>26,47%</td></tr>
-            <tr><td>4,75%</td><td>24,81%</td></tr>
             <tr><td>4,50%</td><td>23,07%</td></tr>
             <tr><td>4,25%</td><td>21,26%</td></tr>
             <tr><td>4,00%</td><td>19,35%</td></tr>
-            <tr><td>3,75%</td><td>17,34%</td></tr>
             <tr><td>3,50%</td><td>15,23%</td></tr>
-            <tr><td>3,25%</td><td>13,04%</td></tr>
             <tr><td>3,00%</td><td>10,71%</td></tr>
             <tr><td>2,75%</td><td>8,26%</td></tr>
             <tr><td>2,50%</td><td>5,66%</td></tr>
@@ -163,46 +156,58 @@
     </div>
 
     <script>
+        // Correspondance taux -> % de baisse selon le tableau
+        const baisseTableau = {
+            "6.00": 31.51,
+            "5.75": 30.31,
+            "5.50": 29.08,
+            "5.25": 27.80,
+            "5.00": 26.47,
+            "4.50": 23.07,
+            "4.25": 21.26,
+            "4.00": 19.35,
+            "3.50": 15.23,
+            "3.00": 10.71,
+            "2.75": 8.26,
+            "2.50": 5.66,
+            "2.25": 2.91
+        };
+
         function calculateRent() {
-            // Récupérer les valeurs du formulaire
-            const oldRate = parseFloat(document.getElementById('oldRate').value);
-            const newRate = parseFloat(document.getElementById('newRate').value);
+            const oldRate = document.getElementById('oldRate').value;
             const currentRent = parseFloat(document.getElementById('currentRent').value);
             const inflation = parseFloat(document.getElementById('inflation').value);
             const expenses = parseFloat(document.getElementById('expenses').value);
-            
-            // Calculer la différence de taux
-            const rateDifference = oldRate - newRate;
-            
-            // Calculer le nombre de paliers de 0.25%
-            const steps = rateDifference / 0.25;
-            
-            // Calculer la baisse maximale (2.91% par palier)
-            const maxReductionPercent = steps * 2.91;
+
+            // Baisse maximale possible selon le tableau
+            const maxReductionPercent = baisseTableau[oldRate] || 0;
             const maxReductionAmount = (currentRent * maxReductionPercent / 100).toFixed(2);
-            
-            // Calculer la compensation pour l'inflation (40% de l'inflation)
+
+            // Compensation pour inflation (40% de l'inflation)
             const inflationCompensation = inflation * 0.4;
-            
-            // Calculer la compensation totale (inflation + charges)
+
+            // Compensation totale (inflation + charges)
             const totalCompensationPercent = inflationCompensation + expenses;
             const totalCompensationAmount = (currentRent * totalCompensationPercent / 100).toFixed(2);
-            
-            // Calculer la baisse nette
-            const netReductionPercent = maxReductionPercent - totalCompensationPercent;
-            const netReductionAmount = (currentRent * netReductionPercent / 100).toFixed(2);
-            
-            // Calculer le nouveau loyer
+
+            // Baisse nette
+            const netReductionPercent = (maxReductionPercent - totalCompensationPercent).toFixed(2);
+            const netReductionAmount = (currentRent * (maxReductionPercent - totalCompensationPercent) / 100).toFixed(2);
+
+            // Nouveau loyer
             const newRentAmount = (currentRent - netReductionAmount).toFixed(2);
-            
-            // Afficher les résultats
+
+            // Affichage
             document.getElementById('rentValue').textContent = currentRent;
             document.getElementById('maxReduction').textContent = maxReductionAmount;
+            document.getElementById('maxReductionPercent').textContent = maxReductionPercent;
             document.getElementById('maxCompensation').textContent = totalCompensationAmount;
+            document.getElementById('maxCompensationPercent').textContent = totalCompensationPercent.toFixed(2);
             document.getElementById('netReduction').textContent = netReductionAmount;
+            document.getElementById('netReductionPercent').textContent = netReductionPercent;
             document.getElementById('newRent').textContent = newRentAmount;
-            
-            // Afficher l'avertissement si la baisse nette est négative
+
+            // Avertissement si la baisse nette est négative
             if (netReductionPercent < 0) {
                 document.getElementById('warning').style.display = 'block';
                 document.getElementById('netReduction').className = 'negative';
@@ -210,8 +215,7 @@
                 document.getElementById('warning').style.display = 'none';
                 document.getElementById('netReduction').className = 'positive';
             }
-            
-            // Afficher la section de résultat
+
             document.getElementById('result').style.display = 'block';
         }
     </script>
